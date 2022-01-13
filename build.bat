@@ -1,29 +1,14 @@
+::██▀▀█▀▀██▀▀▀▀▀▀▀███▀▀█▀▀▀▀▀▀▀▀█
+::██  ▀  █▄  ▄▄▄▄  ▀  ▄█ ▄▀▀ █  █
+::█  ▄ ▄  ▀▀  ▀█▀  ▄  ▀█ ▀▄█ █▄ █
+::█▄▄█▄█▄▄▄▄▄▄██▄▄███▄▄█▄▄▄▄▄▄▄▄█
+:: by Guillaume 'Aoineko' Blanchard under CC-BY-AS license
 @echo off
-:: __________________________ 
-:: ██▀█▀██▀▀▀█▀▀█▀█  ▄▄▄ ▄▄  │
-:: █  ▄ █▄ ▀██▄ ▀▄█ ██   ██  │
-:: █  █ █▀▀ ▄█  █ █ ▀█▄█ ██▄▄│
-:: ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀──────────┘
-::  Build tool configuration
-::─────────────────────────────────────────────────────────────────────────────
 
-rem ***************************************************************************
-rem * DIRECTORIES SETTINGS                                                    *
-rem ***************************************************************************
-set ProjDir=.
-set OutDir=.\out
-set LibDir=..\..\engine
-set ToolsDir=..\..\tools
-
-rem ***************************************************************************
-rem * TOOLS SETTINGS                                                          *
-rem ***************************************************************************
-set SDCC=%ToolsDir%\SDCC\bin
-set Hex2Bin=%ToolsDir%\Hex2bin\hex2bin.exe
-set FillFile=%ToolsDir%\MakeROM\fillfile.exe
-set Emulator=%ToolsDir%\OpenMSX\openmsx.exe
-set Debugger=%ToolsDir%\OpenMSX\Debugger\openmsx-debugger.exe
-set MSXDOS=%ToolsDir%\MSXDOS
+rem ───────────────────────────────────────────────────────────────────────────
+rem  Build Tool configuration
+rem ───────────────────────────────────────────────────────────────────────────
+call ..\default_config.cmd %0
 
 rem ***************************************************************************
 rem * PROJECT SETTINGS                                                        *
@@ -36,7 +21,7 @@ rem  - 1		MSX 1
 rem  - 2		MSX 2
 rem  - 2P		MSX 2+
 rem  - TR		MSX TurboR
-SET Version=2
+SET Machine=2
 rem  Target:
 rem  - BIN		.bin	BASIC binary program (8000h~)
 rem  - ROM16	.rom	16KB ROM in page 1 (4000h ~ 7FFFh)
