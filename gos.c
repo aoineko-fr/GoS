@@ -15,7 +15,7 @@
 #include "math.h"
 #include "print.h"
 #include "draw.h"
-#include "profile.h"
+#include "debug.h"
 #include "pt3/pt3_player.h"
 #include "ayfx/ayfx_player.h"
 // GoS
@@ -29,13 +29,13 @@
 
 //-----------------------------------------------------------------------------
 // DEFINES
-#define GAME_VERSION	"V0.4.0"
+#define GAME_VERSION	"V0.4.1"
 
-#define USE_AUDIO		0
+#define USE_AUDIO		1
 #define LINE_NB			212	// 192 or 212
 #define FIELD_SIZE		384 // 256 or 384
 
-#define TEAM_PLAYERS 	7
+#define TEAM_PLAYERS 	4
 #define BALL_ID			TEAM_PLAYERS*2
 #define INVALID_ID		0xF
 
@@ -56,7 +56,7 @@
 #if (TARGET_TYPE == TYPE_BIN)
 	#define HBLANK_LINE		(u8)(255-9)
 #elif (TARGET_TYPE == TYPE_ROM)
-	#define HBLANK_LINE		(u8)(255-5)
+	#define HBLANK_LINE		(u8)(255-4)
 #elif (TARGET_TYPE == TYPE_DOS)
 	#define HBLANK_LINE		(u8)(255-10)
 #endif
@@ -120,7 +120,7 @@ typedef struct
 
 	u8			team    : 1;	///< Team ID (0 or 1)
 	u8			hasball : 1;	///< Is having ball?
-	u8			moving  : 1;	///< Is moving?: 0=false, 1=true
+	u8			moving  : 1;	///< Is moving?: 0=FALSE, 1=TRUE
 	u8			__10    : 1;
 	u8			role    : 4;	///< Character position team ID (0-15)
 
@@ -176,21 +176,21 @@ typedef struct
 //=============================================================================
 
 // Bitmap Sprites
-#include "data\player.data.h"
+#include "data/player.data.h"
 // HW Sprites
-#include "data\sprite.data.h"
-#include "data\ball.data.h"
-#include "font\font_carwar.h"
+#include "data/sprite.data.h"
+#include "data/ball.data.h"
+#include "font/font_carwar.h"
 // Music
-#include "pt3\pt3_notetable2.h"
-#include "data\music00.h"
+#include "pt3/pt3_notetable2.h"
+#include "data/music00.h"
 // SFX
-#include "data\ayfx_bank.h"
+#include "data/ayfx_bank.h"
 
 
 u8 g_DisplayPage = 0;	///< Index of the current VDP display page (will be switch after V-Blank)
 u8 g_WritePage = 1;		///< Index of the current VDP work page (will be switch after V-Blank)
-u8 g_VSynch = false;	///< Flag to inform game thread that a V-Blank occured
+u8 g_VSynch = FALSE;	///< Flag to inform game thread that a V-Blank occured
 u8 g_FrameCount = 0;	///< Render frames counter
 
 u8 g_LastFrame = 0;		///< Last render frames counter
@@ -324,7 +324,7 @@ void InterruptHook()
 void VBlankHook()
 {
 	VDP_SetPage(V8(g_DisplayPage) * 2);
-	g_VSynch = true;
+	g_VSynch = TRUE;
 	g_FrameCount++;
 	
 	#if (USE_AUDIO)
@@ -339,7 +339,7 @@ void WaitVBlank()
 {
 PROFILE_SECTION_START(10, 0);
 	
-	while(g_VSynch == false) {}
+	while(g_VSynch == FALSE) {}
 	g_WritePage = 1 - g_WritePage;
 	g_DisplayPage = 1 - g_DisplayPage;
 	VDP_SetPage(V8(g_DisplayPage) * 2);
@@ -452,7 +452,7 @@ u16 GetSqrDistance(const Vector816* from, const Vector816* to)
 void InitializeHWSprite()
 {
 	VDP_SetSpriteTables(0x1C000, 0x1CA00);	
-	VDP_EnableSprite(true);
+	VDP_EnableSprite(TRUE);
 
 	// Hide all sprites
 	for(u8 i = 0; i < 32; ++i)
@@ -460,7 +460,7 @@ void InitializeHWSprite()
 	
 	// Text sprites
 	Print_SetColor(9, 0);
-	Print_SetFontSprite(g_Font_Carwar, 48, 0);
+	Print_SetSpriteFont(g_Font_Carwar, 48, 0);
 	// Score sprites
 	Print_SetSpriteID(SPRITE_Score);
 	Print_SetPosition(2, SPRT_TXT_Y);
@@ -617,7 +617,7 @@ void Ball_Reset()
 	g_Ball.actor.pos.x = 128;
 	g_Ball.actor.pos.y = FIELD_SIZE/2;
 	g_Ball.speed = 0;
-	g_Ball.owner = null;
+	g_Ball.owner = NULL;
 
 	PROFILE_SECTION_END(70, 0);
 }
@@ -627,7 +627,7 @@ void Ball_Update()
 {
 	PROFILE_SECTION_START(80, 0);
 
-	if(g_Ball.owner == null)
+	if(g_Ball.owner == NULL)
 	{
 		if(g_Ball.speed > 0)
 		{
@@ -648,13 +648,13 @@ void Ball_Update()
 		if(g_Ball.speed < (1 << 4))
 		{
 			PlayerActor* p = &g_Players[0];
-			loop(i, TEAM_PLAYERS*2)
+			loop(i, TEAM_PLAYERS)//*2)
 			{
 				u16 sqrDist = GetSqrDistance(&(p->actor.pos), &g_Ball.actor.pos);
 				if(sqrDist < 3*3)
 				{
 					g_Ball.owner = (Actor*)p;
-					p->hasball = true;
+					p->hasball = TRUE;
 					break;
 				}
 				p++;
@@ -858,9 +858,9 @@ void UpdateController()
 		{
 			if(p->hasball) // shoot
 			{
-				p->hasball = false;
+				p->hasball = FALSE;
 				g_Ball.actor.dir = a->dir;
-				g_Ball.owner = null;
+				g_Ball.owner = NULL;
 				g_Ball.speed = 5 << 4;
 				#if (USE_AUDIO)
 					ayFX_PlayBank(1, 0);
@@ -875,9 +875,9 @@ void UpdateController()
 		{
 			if(p->hasball) // pass
 			{
-				p->hasball = false;
+				p->hasball = FALSE;
 				g_Ball.actor.dir = a->dir;
-				g_Ball.owner = null;
+				g_Ball.owner = NULL;
 				g_Ball.speed = 3 << 4;
 				#if (USE_AUDIO)
 					ayFX_PlayBank(6, 0);
@@ -917,8 +917,8 @@ void MainLoop()
 	VDP_SetPage(0);
 
 	// Speed-up VDP setup
-	VDP_EnableSprite(false);
-	VDP_EnableDisplay(false);
+	VDP_EnableSprite(FALSE);
+	VDP_EnableDisplay(FALSE);
 	
 	// Field
 	DrawField();
@@ -964,7 +964,7 @@ void MainLoop()
 	// [14] #0D0D0D
 	// [15] #0E0E0E
 	
-	// VDP_EnableDisplay(true);
+	// VDP_EnableDisplay(TRUE);
 	// VDP_SetPage(1);
 	// while(!Keyboard_IsKeyPressed(KEY_SPACE)) {}
 	
@@ -986,8 +986,8 @@ void MainLoop()
 		}
 		
 		p->action = ACTION_Idle;
-		p->hasball = false;
-		p->moving = false;
+		p->hasball = FALSE;
+		p->moving = FALSE;
 
 		Player_ComputeTaget(p, 5);
 
@@ -1028,7 +1028,7 @@ void MainLoop()
 		// INIT PT3
 		PT3_Init();
 		PT3_SetNoteTable(PT3_NT2);
-		PT3_SetLoop(true);
+		PT3_SetLoop(TRUE);
 		PT3_InitSong(g_Music00);
 		PT3_Play();
 		
@@ -1045,13 +1045,13 @@ void MainLoop()
 	u8 prevRow6 = 0xFF;
 
 
-	VDP_EnableDisplay(true);
+	VDP_EnableDisplay(TRUE);
 	while(1)
 	{
 PROFILE_FRAME_START();
 
 		//---------------------------------------------------------------------
-		g_VSynch = false;
+		g_VSynch = FALSE;
 		WaitVBlank();
 
 		ballPosition = b->pos;
@@ -1080,9 +1080,9 @@ PROFILE_SECTION_START(140, 0);
 
 		// Handle scroll events
 		if((g_PrevScrollOffset < 256 - LINE_NB) && (g_ScrollOffset >= 256 - LINE_NB))
-			VDP_EnableHBlank(true);
+			VDP_EnableHBlank(TRUE);
 		else if((g_PrevScrollOffset >= 256 - LINE_NB) && (g_ScrollOffset < 256 - LINE_NB))
-			VDP_EnableHBlank(false);
+			VDP_EnableHBlank(FALSE);
 		// Set the screen scrolling offset
 		VDP_SetVerticalOffset(g_ScrollOffset);
 
