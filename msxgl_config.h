@@ -143,6 +143,15 @@
 #define DOS_USE_VALIDATOR			TRUE	// Add support for last error backup and return value validation
 
 //-----------------------------------------------------------------------------
+// CLOCK MODULE
+//-----------------------------------------------------------------------------
+
+#define RTC_USE_CLOCK				TRUE	// Add functions to handle date and time
+#define RTC_USE_CLOCK_EXTRA			TRUE	// Add extra date and time functions that require additional data
+#define RTC_USE_SAVEDATA			TRUE	// Add functions to read/write into the CMOS 
+#define RTC_USE_SAVESIGNED			TRUE	// Add signature handling to validate CMOS I/O
+
+//-----------------------------------------------------------------------------
 // DRAW MODULE
 //-----------------------------------------------------------------------------
 
@@ -289,6 +298,16 @@
 #define TRILO_USE_SFXPLAY			1
 #define TRILO_USE_TREMOLO			1
 #define TRILO_USE_TAIL				0
+
+// LVGM replayer options
+#define LVGM_USE_PSG				TRUE
+#define LVGM_USE_MSXMUSIC			TRUE
+#define LVGM_USE_MSXAUDIO			TRUE
+#define LVGM_USE_SCC				TRUE
+#define LVGM_USE_SCCI				FALSE
+#define LVGM_USE_PSG2				FALSE
+#define LVGM_USE_OPL4				FALSE
+#define LVGM_USE_NOTIFY				TRUE
 
 //-----------------------------------------------------------------------------
 // MSXi MODULE
