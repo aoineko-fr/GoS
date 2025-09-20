@@ -339,7 +339,7 @@ void WaitVBlank()
 {
 // PROFILE_SECTION_START(10, 0);
 	
-	while(g_VSynch == FALSE) {}
+	while (g_VSynch == FALSE) {}
 	g_WritePage = 1 - g_WritePage;
 	g_DisplayPage = 1 - g_DisplayPage;
 	VDP_SetPage(V8(g_DisplayPage) * 2);
@@ -358,9 +358,9 @@ void Player_ComputeTaget(PlayerActor* p, u8 area)
 // PROFILE_SECTION_START(20, 0);
 
 	Actor* a = (Actor*)p;
-	if(p->team == 0)
+	if (p->team == 0)
 	{
-		switch(area)
+		switch (area)
 		{
 		case 5:
 		case 4:
@@ -379,7 +379,7 @@ void Player_ComputeTaget(PlayerActor* p, u8 area)
 	}
 	else // team == 1
 	{
-		switch(area)
+		switch (area)
 		{
 		case 0:
 		case 1:
@@ -405,7 +405,7 @@ void Player_ComputeTaget(PlayerActor* p, u8 area)
 void DrawField()
 {
 	// Field
-	for(u8 j = 0; j < 24; ++j)
+	for (u8 j = 0; j < 24; ++j)
 	{
 		u8 col = (j & 1) ? 0xDD : 0xEE;
 		VDP_CommandHMMV(0, (j * 16), 256, 16, col);
@@ -455,7 +455,7 @@ void InitializeHWSprite()
 	VDP_EnableSprite(TRUE);
 
 	// Hide all sprites
-	for(u8 i = 0; i < 32; ++i)
+	for (u8 i = 0; i < 32; ++i)
 		VDP_SetSpritePositionY(i, 212);	
 	
 	// Text sprites
@@ -501,17 +501,17 @@ void UpdateHWSprite()
 {
 // PROFILE_SECTION_START(30, 0);
 
-	if(g_ScrollOffset != g_PrevScrollOffset)
+	if (g_ScrollOffset != g_PrevScrollOffset)
 	{
 		loop(i, 8)
 			VDP_SetSpritePositionY(SPRITE_Score + i, SPRT_TXT_Y + g_ScrollOffset);				
 	}
 
-	// if((g_PrevScrollOffset < 140) && (g_ScrollOffset >= 140))
+	// if ((g_PrevScrollOffset < 140) && (g_ScrollOffset >= 140))
 	// {
 		// VDP_SetSpritePositionY(SPRITE_GoalH+0, 352);
 	// }
-	// else if((g_PrevScrollOffset >= 140) && (g_ScrollOffset < 140))
+	// else if ((g_PrevScrollOffset >= 140) && (g_ScrollOffset < 140))
 	// {
 		// VDP_SetSpritePositionY(SPRITE_GoalH+0, 216);
 	// }
@@ -532,7 +532,7 @@ void Actor_RestaureBG(Actor* a) __FASTCALL
 {
 // PROFILE_SECTION_START(40, 0);
 
-	if(a->prevRender.drawn)
+	if (a->prevRender.drawn)
 	{
 		u8 dx = a->prevRender.destPos.x;
 		u8 nx = dx + a->prevRender.size.x;
@@ -559,7 +559,7 @@ void Actor_Backup(Actor* a) __FASTCALL
 {
 // PROFILE_SECTION_START(50, 0);
 
-	if(a->visible)
+	if (a->visible)
 	{
 		u8 dx = a->render.destPos.x;
 		u8 nx = dx + a->render.size.x;
@@ -586,7 +586,7 @@ void Actor_Draw(Actor* a) __FASTCALL
 // PROFILE_SECTION_START(60, 0);
 
 	a->render.drawn = 0;
-	if(a->visible)
+	if (a->visible)
 	{
 		VDP_CommandLMMM(
 			a->srcPos.x, 
@@ -627,31 +627,31 @@ void Ball_Update()
 {
 	// PROFILE_SECTION_START(80, 0);
 
-	if(g_Ball.owner == NULL)
+	if (g_Ball.owner == NULL)
 	{
-		if(g_Ball.speed > 0)
+		if (g_Ball.speed > 0)
 		{
 			g_Ball.actor.pos.x += ((RunMove[g_Ball.actor.dir].x - 1) * g_Ball.speed) >> 4;
 			g_Ball.actor.pos.y += ((RunMove[g_Ball.actor.dir].y - 1) * g_Ball.speed) >> 4;
 			g_Ball.speed--;
 
-			if(g_Ball.actor.pos.x < 8)
+			if (g_Ball.actor.pos.x < 8)
 				Ball_Reset();
-			else if(g_Ball.actor.pos.x > (u8)(255 - 8))
+			else if (g_Ball.actor.pos.x > (u8)(255 - 8))
 				Ball_Reset();
-			else if(g_Ball.actor.pos.y < 8)
+			else if (g_Ball.actor.pos.y < 8)
 				Ball_Reset();
-			else if(g_Ball.actor.pos.y > FIELD_SIZE-8)
+			else if (g_Ball.actor.pos.y > FIELD_SIZE-8)
 				Ball_Reset();
 		}
 
-		if(g_Ball.speed < (1 << 4))
+		if (g_Ball.speed < (1 << 4))
 		{
 			PlayerActor* p = &g_Players[0];
 			loop(i, TEAM_PLAYERS)//*2)
 			{
 				u16 sqrDist = GetSqrDistance(&(p->actor.pos), &g_Ball.actor.pos);
-				if(sqrDist < 3*3)
+				if (sqrDist < 3*3)
 				{
 					g_Ball.owner = (Actor*)p;
 					p->hasball = TRUE;
@@ -677,7 +677,7 @@ void Ball_Prepare(Actor* a) __FASTCALL
 {
 	// PROFILE_SECTION_START(90, 0);
 
-	if(a->visible)
+	if (a->visible)
 	{
 		a->srcPos.x = BALL_BMP_X + 4 * ((g_FrameCount >> 2) & 0x3);
 		a->srcPos.y = BALL_BMP_Y;
@@ -699,7 +699,7 @@ void Player_UpdateSight(PlayerActor* p) __FASTCALL
 	Team* t = &g_Teams[p->team];
 
 	u16 sqrDist = GetSqrDistance(&(p->actor.pos), &g_Ball.actor.pos);
-	if((sqrDist < t->nearestDist) || (t->nearestDist == 0xFFFF))
+	if ((sqrDist < t->nearestDist) || (t->nearestDist == 0xFFFF))
 	{
 		t->nearestDist = sqrDist;
 		t->nearestPly = p->actor.id;				
@@ -715,21 +715,21 @@ void Player_UpdateAction(PlayerActor* p) __FASTCALL
 
 	Actor* a = (Actor*)p;
 	u8 dir = 0;
-	if(a->id == g_Controllers[0].actor) // Input controller
+	if (a->id == g_Controllers[0].actor) // Input controller
 	{
 // PROFILE_SECTION_START(112, 0);
-		if(IS_KEY_PRESSED(g_KeyRow8, KEY_UP))
+		if (IS_KEY_PRESSED(g_KeyRow8, KEY_UP))
 			dir |= JOY_INPUT_DIR_UP;
-		else if(IS_KEY_PRESSED(g_KeyRow8, KEY_DOWN))
+		else if (IS_KEY_PRESSED(g_KeyRow8, KEY_DOWN))
 			dir |= JOY_INPUT_DIR_DOWN;
-		if(IS_KEY_PRESSED(g_KeyRow8, KEY_RIGHT))
+		if (IS_KEY_PRESSED(g_KeyRow8, KEY_RIGHT))
 			dir |= JOY_INPUT_DIR_RIGHT;
-		else if(IS_KEY_PRESSED(g_KeyRow8, KEY_LEFT))
+		else if (IS_KEY_PRESSED(g_KeyRow8, KEY_LEFT))
 			dir |= JOY_INPUT_DIR_LEFT;
 
 
 		// Apply movement
-		if(dir != 0)
+		if (dir != 0)
 		{
 			p->action = ACTION_Run;
 			a->dir = DirToIdx[dir];
@@ -744,7 +744,7 @@ void Player_UpdateAction(PlayerActor* p) __FASTCALL
 	{
 // PROFILE_SECTION_START(114, 0);
 		Vector816* t;
-		if(a->id == g_Teams[p->team].nearestPly)
+		if (a->id == g_Teams[p->team].nearestPly)
 			t = &g_Ball.actor.pos;
 		else
 		{
@@ -757,13 +757,13 @@ void Player_UpdateAction(PlayerActor* p) __FASTCALL
 		{
 			p->action = ACTION_Run;
 			// Turn toward movement
-			if(a->pos.x < t->x)
+			if (a->pos.x < t->x)
 				dir += JOY_INPUT_DIR_RIGHT;
-			else if(a->pos.x > t->x)
+			else if (a->pos.x > t->x)
 				dir += JOY_INPUT_DIR_LEFT;
-			if(a->pos.y > t->y)
+			if (a->pos.y > t->y)
 				dir += JOY_INPUT_DIR_UP;
-			else if(a->pos.y < t->y)
+			else if (a->pos.y < t->y)
 				dir += JOY_INPUT_DIR_DOWN;
 			a->dir = DirToIdx[dir];
 			// Move
@@ -776,14 +776,14 @@ void Player_UpdateAction(PlayerActor* p) __FASTCALL
 			// p->action = ACTION_Idle;
 			// // Turn toward ball
 			// u8 dx = 128 + a->pos.x - b->x;
-			// if(dx < 128 + -MIN_DIFF)
+			// if (dx < 128 + -MIN_DIFF)
 				// dir += JOY_INPUT_DIR_RIGHT;
-			// else if(dx > 128 + MIN_DIFF)
+			// else if (dx > 128 + MIN_DIFF)
 				// dir += JOY_INPUT_DIR_LEFT;
 			// u8 dy = 128 + a->pos.y - b->y;
-			// if(dy > 128 + MIN_DIFF)
+			// if (dy > 128 + MIN_DIFF)
 				// dir += JOY_INPUT_DIR_UP;
-			// else if(dy < 128 + -MIN_DIFF)
+			// else if (dy < 128 + -MIN_DIFF)
 				// dir += JOY_INPUT_DIR_DOWN;
 			// a->dir = DirToIdx[dir];	
 		// }
@@ -792,24 +792,24 @@ void Player_UpdateAction(PlayerActor* p) __FASTCALL
 // PROFILE_SECTION_START(116, 0);
 
 	// Validate new position
-	if(a->pos.x < 8)
+	if (a->pos.x < 8)
 		a->pos.x = 8;
-	else if(a->pos.x > (u8)(255 - 8))
+	else if (a->pos.x > (u8)(255 - 8))
 		a->pos.x = (u8)(255 - 8);
-	if(a->pos.y < 16)
+	if (a->pos.y < 16)
 		a->pos.y = 16;
-	else if(a->pos.y > FIELD_SIZE-1)
+	else if (a->pos.y > FIELD_SIZE-1)
 		a->pos.y = FIELD_SIZE-1;
 
-	if((a->pos.y < g_ScrollOffset) || (a->pos.y - 15 > (g_ScrollOffset + LINE_NB)))
+	if ((a->pos.y < g_ScrollOffset) || (a->pos.y - 15 > (g_ScrollOffset + LINE_NB)))
 		a->visible = 0;
 	else
 		a->visible = 1;
 
 	// Compute sprite ID
-	if(p->action == ACTION_Idle)
+	if (p->action == ACTION_Idle)
 		p->sprtId = 0;
-	else //if(p->action == ACTION_Run)
+	else //if (p->action == ACTION_Run)
 		p->sprtId = Anim_RunFrames[(g_FrameCount >> 1) & 0x03];
 // PROFILE_SECTION_END(116, 0);
 
@@ -823,7 +823,7 @@ void Player_Prepare(PlayerActor* p) __FASTCALL
 
 	Actor* a = (Actor*)p;
 
-	if(a->visible)
+	if (a->visible)
 	{
 		const u8* ptr = g_PlayerSprite + g_PlayerSprite_index[p->sprtId + (a->dir << 3)];
 		u8 minX = *ptr >> 4;
@@ -849,14 +849,14 @@ void UpdateController()
 {
 	// PROFILE_SECTION_START(130, 0);
 
-	if(g_Controllers[0].actor != INVALID_ID)
+	if (g_Controllers[0].actor != INVALID_ID)
 	{
 		PlayerActor* p = &g_Players[g_Controllers[0].actor];
 		Actor* a = (Actor*)p;
 
-		if(IS_KEY_PRESSED(g_KeyRow8, KEY_SPACE) && !IS_KEY_PRESSED(g_KeyPrevRow8, KEY_SPACE))
+		if (IS_KEY_PRESSED(g_KeyRow8, KEY_SPACE) && !IS_KEY_PRESSED(g_KeyPrevRow8, KEY_SPACE))
 		{
-			if(p->hasball) // shoot
+			if (p->hasball) // shoot
 			{
 				p->hasball = FALSE;
 				g_Ball.actor.dir = a->dir;
@@ -871,9 +871,9 @@ void UpdateController()
 				
 			}
 		}
-		else if(IS_KEY_PRESSED(g_KeyRow6, KEY_GRAPH) && !IS_KEY_PRESSED(g_KeyPrevRow6, KEY_GRAPH))
+		else if (IS_KEY_PRESSED(g_KeyRow6, KEY_GRAPH) && !IS_KEY_PRESSED(g_KeyPrevRow6, KEY_GRAPH))
 		{
-			if(p->hasball) // pass
+			if (p->hasball) // pass
 			{
 				p->hasball = FALSE;
 				g_Ball.actor.dir = a->dir;
@@ -966,15 +966,15 @@ void MainLoop()
 	
 	// VDP_EnableDisplay(TRUE);
 	// VDP_SetPage(1);
-	// while(!Keyboard_IsKeyPressed(KEY_SPACE)) {}
+	// while (!Keyboard_IsKeyPressed(KEY_SPACE)) {}
 	
 	//-------------------------------------------------------------------------
 	// Initialize players
 	PlayerActor* p = g_Players;
-	for(u8 i = 0; i < TEAM_PLAYERS*2; ++i)
+	for (u8 i = 0; i < TEAM_PLAYERS*2; ++i)
 	{		
 		p->role = i % 7;
-		if(i < TEAM_PLAYERS) // Team A (0)
+		if (i < TEAM_PLAYERS) // Team A (0)
 		{
 			// a->dir = 0;
 			p->team = 0;
@@ -1046,7 +1046,7 @@ void MainLoop()
 
 
 	VDP_EnableDisplay(TRUE);
-	while(1)
+	while (1)
 	{
 // PROFILE_FRAME_START();
 
@@ -1064,9 +1064,9 @@ void MainLoop()
 		
 		// Follow the ball Y position
 		i16 newOffset = ((i16)ballPosition.y - (LINE_NB / 2));
-		if(newOffset < 0)
+		if (newOffset < 0)
 			newOffset = 0;
-		else if(newOffset > FIELD_SIZE - LINE_NB)
+		else if (newOffset > FIELD_SIZE - LINE_NB)
 			newOffset = FIELD_SIZE - LINE_NB;
 			
 		u8 scrollSpeed = Abs8((i8)(g_ScrollOffset - newOffset));
@@ -1079,9 +1079,9 @@ void MainLoop()
 			g_ScrollOffset += scrollSpeed;
 
 		// Handle scroll events
-		if((g_PrevScrollOffset < 256 - LINE_NB) && (g_ScrollOffset >= 256 - LINE_NB))
+		if ((g_PrevScrollOffset < 256 - LINE_NB) && (g_ScrollOffset >= 256 - LINE_NB))
 			VDP_EnableHBlank(TRUE);
-		else if((g_PrevScrollOffset >= 256 - LINE_NB) && (g_ScrollOffset < 256 - LINE_NB))
+		else if ((g_PrevScrollOffset >= 256 - LINE_NB) && (g_ScrollOffset < 256 - LINE_NB))
 			VDP_EnableHBlank(FALSE);
 		// Set the screen scrolling offset
 		VDP_SetVerticalOffset(g_ScrollOffset);
@@ -1120,12 +1120,12 @@ void MainLoop()
 		{
 			PlayerActor* p = &g_Players[i];
 			g_SortedId[i] = i;
-			if(i > 0)
+			if (i > 0)
 			{
-				for(u8 j = i-1; j != 255; --j)
+				for (u8 j = i-1; j != 255; --j)
 				{
 					PlayerActor* p2 = &g_Players[g_SortedId[j]];
-					if(p->actor.pos.y < p2->actor.pos.y)
+					if (p->actor.pos.y < p2->actor.pos.y)
 					{
 						g_SortedId[j+1] = g_SortedId[j];
 						g_SortedId[j] = i;
@@ -1177,12 +1177,12 @@ void MainLoop()
 // PROFILE_SECTION_END(210, 0);
 
 // PROFILE_SECTION_START(220, 0);
-		if(g_ScrollOffset < 10)
+		if (g_ScrollOffset < 10)
 		{
 			VDP_CommandHMMV(128 - GOAL_LENGTH/2+1, 1 + (512 * g_WritePage), 2, 8, 0xFF);
 			VDP_CommandHMMV(128 + GOAL_LENGTH/2-1, 1 + (512 * g_WritePage), 2, 8, 0xFF);
 		}
-		else if(g_ScrollOffset > 144)
+		else if (g_ScrollOffset > 144)
 		{
 			VDP_CommandHMMV(128 - GOAL_LENGTH/2+1, 384 - 8 - GOAL_HEIGHT + (512 * g_WritePage), GOAL_LENGTH,  2, 0xFF);
 			VDP_CommandHMMV(128 - GOAL_LENGTH/2+1, 384 - 6 - GOAL_HEIGHT + (512 * g_WritePage), 2, GOAL_HEIGHT-1, 0xFF);
